@@ -31,3 +31,4 @@ python3 -m http.server 8000
 ## Публикация
 
 Settings → Pages → Deploy from a branch → `main` / root.
+
