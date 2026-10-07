@@ -5,10 +5,24 @@
 window.SITE = {
   phone: "77076857208",
 
-  // Цена null показывается как «уточняйте».
+  // Прайс-лист барбершопа (в тенге). to — верхняя граница диапазона, tag — пометка, note — пояснение.
   services: [
-    { id: "men", name: "Мужская стрижка", desc: "Консультация, стрижка, укладка", price: 3500, from: true },
-    { id: "kids", name: "Детская стрижка", desc: "Аккуратно и без спешки", price: null }
+    { id: "men", group: "Стрижки", name: "Мужская стрижка", price: 5000 },
+    { id: "student", group: "Стрижки", name: "Студентам и школьникам", price: 3500, tag: "скидка" },
+    { id: "kids", group: "Стрижки", name: "Детская стрижка", note: "До 12 лет", price: 3000 },
+    { id: "tattoo", group: "Стрижки", name: "Hair tattoo", price: 500, to: 1000 },
+
+    { id: "beard", group: "Борода", name: "Оформление бороды", price: 3000 },
+    { id: "beard-camo", group: "Борода", name: "Камуфляж бороды", price: 2500 },
+
+    { id: "combo-beard", group: "Комплексы", name: "Стрижка + борода", price: 7000, tag: "выгода 1 000 ₸" },
+    { id: "combo-camo", group: "Комплексы", name: "Стрижка + камуфляж волос", price: 10000 },
+    { id: "combo-care", group: "Комплексы", name: "Стрижка + маска + ваксинг", price: 10000 },
+
+    { id: "styling", group: "Уход и стиль", name: "Укладка", price: 1500 },
+    { id: "wax", group: "Уход и стиль", name: "Ваксинг", note: "Удаление волос из носа и ушей, одна зона", price: 1000 },
+    { id: "mask", group: "Уход и стиль", name: "Маска для лица", note: "Глина", price: 1500 },
+    { id: "facial", group: "Уход и стиль", name: "Чистка лица", note: "С брендом «Kristina»", price: 6000 }
   ],
 
   // photo: путь к фото мастера, например "assets/team/sayat.jpg". Пока фото нет, показываются инициалы.

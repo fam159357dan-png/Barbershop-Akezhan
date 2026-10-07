@@ -20,12 +20,18 @@
   document.body.classList.add("is-loading");
   $("[data-year]").textContent = new Date().getFullYear();
 
-  $("[data-services]").innerHTML = S.services.map((s) => `
-    <div class="price reveal" data-pick-service="${s.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(s.name)}">
-      <span class="price__name">${esc(s.name)}</span>
-      <span class="price__desc">${esc(s.desc)}</span>
-      <span class="price__value">${s.price ? `${s.from ? "от " : ""}${fmtPrice(s.price)}` : `<span class="ask">уточняйте</span>`}<small>записаться →</small></span>
-    </div>`).join("");
+  const priceText = (p) => (p.to ? `${p.price.toLocaleString("ru-RU")}–${fmtPrice(p.to)}` : fmtPrice(p.price));
+  const groups = [...new Set(S.services.map((p) => p.group))];
+  $("[data-services]").innerHTML = groups.map((g, gi) => `
+    <section class="pcard ${g === "Комплексы" ? "pcard--hot" : ""} reveal" style="--d:${gi * 0.08}s">
+      <h3 class="pcard__title">${esc(g)}</h3>
+      ${S.services.filter((p) => p.group === g).map((p) => `
+      <div class="pr" data-pick-service="${p.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(p.name)}, ${priceText(p)}">
+        <span class="pr__name">${esc(p.name)}${p.tag ? ` <em>${esc(p.tag)}</em>` : ""}${p.note ? `<small>${esc(p.note)}</small>` : ""}</span>
+        <i class="pr__dots" aria-hidden="true"></i>
+        <b class="pr__val">${priceText(p)}</b>
+      </div>`).join("")}
+    </section>`).join("");
 
   $("[data-team]").innerHTML = S.team.map((m, i) => `
     <article class="member reveal" style="--d:${i * 0.08}s">
@@ -216,7 +222,7 @@
       requestAnimationFrame(loop);
     };
     loop();
-    document.addEventListener("mouseover", (e) => cursor.classList.toggle("hover", !!e.target.closest("a, button, .price, .tile, input, textarea")));
+    document.addEventListener("mouseover", (e) => cursor.classList.toggle("hover", !!e.target.closest("a, button, .price, .tile, .pr, input, textarea")));
 
     $$(".magnetic").forEach((el) => {
       el.addEventListener("mousemove", (e) => {
@@ -418,7 +424,7 @@
     const lines = [
       "Здравствуйте! Хочу записаться в Akezhan Barbershop.",
       `Имя: ${name}`,
-      `Услуга: ${svc.name}`,
+      `Услуга: ${svc.name} (${priceText(svc)})`,
       `Мастер: ${state.master}`,
       `Дата: ${wd[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}, ${state.time}`
     ];
