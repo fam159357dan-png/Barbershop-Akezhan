@@ -74,12 +74,14 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero__bg" aria-hidden="true">
+        <video class="hero__video" src="assets/gallery/dry-shave.mp4" poster="assets/frames/dry-shave-12.jpg" autoplay muted loop playsinline></video>
         <div class="hero__glow"></div>
         <div class="hero__grid"></div>
-        <svg class="hero__scissors" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="58" cy="150" r="22"/><circle cx="142" cy="150" r="22"/>
-          <path d="M72 133 L150 30"/><path d="M128 133 L50 30"/><circle cx="100" cy="96" r="3" fill="currentColor"/>
-        </svg>
+        <div class="hero__stack">
+          <img class="hero__photo hero__photo--a" src="assets/frames/beard-12.jpg" alt="" data-speed="-0.10">
+          <img class="hero__photo hero__photo--b" src="assets/frames/cup-2025-4.jpg" alt="" data-speed="0.08">
+          <img class="hero__photo hero__photo--c" src="assets/frames/dry-shave-12.jpg" alt="" data-speed="-0.04">
+        </div>
       </div>
       <div class="hero__content">
         <p class="eyebrow reveal">Петропавловск · ул. Абая, 40</p>
@@ -112,6 +114,9 @@
       </div>
     </div>
 
+    <!-- PHOTO STRIP -->
+    <div class="strip" aria-hidden="true" data-strip></div>
+
     <!-- ABOUT -->
     <section class="section about" id="about">
       <div class="container about__grid">
@@ -123,6 +128,11 @@
           <p class="reveal">Akezhan — барбершоп на Абая, 40, куда возвращаются годами. Клиенты в 2GIS отмечают вежливых профессиональных мастеров, чистоту и атмосферу, в которой хочется задержаться.</p>
           <p class="reveal">Стрижём быстро и делаем ровно ту стрижку, которую вы хотите. Хорошо ладим с детьми, а пока ждёте своей очереди, можно поиграть в PlayStation.</p>
         </div>
+      </div>
+      <div class="container mosaic">
+        <figure class="reveal-img mosaic__a" data-speed="0.06"><img src="assets/frames/dry-shave-12.jpg" alt="Кресло и барбер-пилон в барбершопе Akezhan" loading="lazy"></figure>
+        <figure class="reveal-img mosaic__b" data-speed="-0.05"><img src="assets/frames/interior-64.jpg" alt="Полки с косметикой в барбершопе" loading="lazy"></figure>
+        <figure class="reveal-img mosaic__c" data-speed="0.1"><img src="assets/frames/dry-shave-3.jpg" alt="Зона ожидания с диваном" loading="lazy"></figure>
       </div>
       <div class="container features">
         <article class="feature tilt reveal">
@@ -145,6 +155,26 @@
           <h3>Дружим с детьми</h3>
           <p>Детские стрижки без слёз и спешки.</p>
         </article>
+      </div>
+    </section>
+
+    <!-- CHAMPION -->
+    <section class="section champ" id="champion">
+      <div class="container champ__grid">
+        <div class="champ__media">
+          <figure class="reveal-img"><img src="assets/frames/cup-2025-8.jpg" alt="Акежан с кубком на Asian Global Cup 2025" loading="lazy"></figure>
+          <div class="champ__badge" data-speed="-0.12"><b>2</b><span>место</span></div>
+        </div>
+        <div>
+          <p class="eyebrow reveal">Чемпион</p>
+          <h2 class="h2 split">Призёр Asian Global Cup</h2>
+          <p class="champ__text reveal">Барбер Акежан занял второе место на Asian Global Cup 2025 в Алматы. Тот же уровень мы приносим в каждую стрижку на Абая, 40.</p>
+          <ul class="champ__stats reveal">
+            <li><b data-count="2">0</b><span>место</span></li>
+            <li><b data-count="2025">0</b><span>Asian Global Cup</span></li>
+          </ul>
+          <a href="https://www.instagram.com/akezhan.barber/reel/DRthn9siuzz/" target="_blank" rel="noopener" class="btn btn--ghost btn--sm magnetic reveal">Смотреть в Instagram →</a>
+        </div>
       </div>
     </section>
 

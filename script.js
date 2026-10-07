@@ -56,6 +56,12 @@
   ];
   $("[data-gallery]").innerHTML = media.length ? media.concat([brandTiles[0], brandTiles[3], brandTiles[2]]).join("") : brandTiles.join("");
 
+  // Бегущая лента фото: два ряда в разные стороны, каждый повторён 4 раза для бесшовной петли.
+  const frames = S.frames || [];
+  const half = Math.ceil(frames.length / 2);
+  const row = (list, cls) => `<div class="strip__row ${cls}">${[0, 1, 2, 3].map((k) => list.map((f) => `<img src="${esc(f.src)}" alt="${k ? "" : esc(f.alt || "")}" loading="lazy">`).join("")).join("")}</div>`;
+  $("[data-strip]").innerHTML = row(frames.slice(0, half), "") + row(frames.slice(half).reverse(), "strip__row--rev");
+
   $("[data-reviews]").innerHTML = S.reviews.map((r) => `
     <article class="review">
       <div class="review__mark" aria-hidden="true">“</div>
@@ -119,14 +125,20 @@
     navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${current}`));
     parallax(y);
   };
-  const scissors = $(".hero__scissors");
   const glow = $(".hero__glow");
+  const speedEls = $$("[data-speed]");
   const parallax = (y) => {
-    if (reduceMotion || y > innerHeight * 1.2) return;
-    scissors.style.translate = `0 ${y * 0.25}px`;
-    glow.style.translate = `0 ${y * 0.15}px`;
+    if (reduceMotion) return;
+    if (y < innerHeight * 1.2) glow.style.translate = `0 ${y * 0.15}px`;
+    for (const el of speedEls) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > innerHeight + 200) continue;
+      el.style.translate = `0 ${(r.top + r.height / 2 - innerHeight / 2) * -el.dataset.speed * 2}px`;
+    }
   };
   addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", () => parallax(scrollY));
+  if (reduceMotion) $(".hero__video").pause();
 
   /* ---------- mobile menu ---------- */
   function closeMenu() {
@@ -170,7 +182,7 @@
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
   }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-  const observeReveals = () => $$(".reveal:not(.in), .split:not(.in)").forEach((el) => io.observe(el));
+  const observeReveals = () => $$(".reveal:not(.in), .split:not(.in), .reveal-img:not(.in)").forEach((el) => io.observe(el));
 
   /* ---------- counters ---------- */
   const counterIO = new IntersectionObserver((entries) => {

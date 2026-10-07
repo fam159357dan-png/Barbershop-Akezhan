@@ -13,7 +13,7 @@ window.SITE = {
 
   // photo: путь к фото мастера, например "assets/team/sayat.jpg". Пока фото нет, показываются инициалы.
   team: [
-    { name: "Акежан", role: "Барбер · 2 место Asian Global Cup 2025", instagram: "akezhan.barber", photo: null },
+    { name: "Акежан", role: "Барбер · 2 место Asian Global Cup 2025", instagram: "akezhan.barber", photo: "assets/frames/cup-2025-4.jpg" },
     { name: "Саят", role: "Барбер", instagram: "sa.yat087", photo: null },
     { name: "Асет", role: "Барбер", instagram: null, photo: null },
     { name: "Али", role: "Барбер", instagram: null, photo: null },
@@ -21,14 +21,31 @@ window.SITE = {
     { name: "Камила", role: "Мастер", instagram: null, photo: null }
   ],
 
+  // Кадры для бегущей ленты (вырезаны из роликов Instagram).
+  frames: [
+    { src: "assets/frames/beard-3.jpg", alt: "Стрижка в Akezhan Barbershop" },
+    { src: "assets/frames/cup-2025-4.jpg", alt: "Акежан с кубком Asian Global Cup 2025" },
+    { src: "assets/frames/dry-shave-12.jpg", alt: "Кресло и барбер-пилон" },
+    { src: "assets/frames/interior-64.jpg", alt: "Полки с косметикой" },
+    { src: "assets/frames/beard-22.jpg", alt: "Мастер за работой" },
+    { src: "assets/frames/dry-shave-3.jpg", alt: "Зона ожидания" },
+    { src: "assets/frames/beard-12.jpg", alt: "Стрижка ножницами" },
+    { src: "assets/frames/cup-2025-8.jpg", alt: "Награждение" },
+    { src: "assets/frames/interior-44.jpg", alt: "У стойки барбершопа" }
+  ],
+
   // Фото работ: положите файлы в assets/gallery/ и перечислите их здесь,
   // например { src: "assets/gallery/01.jpg", caption: "Кроп с фейдом" }.
   // Видео: { video: "assets/gallery/01.mp4", poster: "assets/gallery/01.jpg", caption: "..." }.
   gallery: [
     { video: "assets/gallery/cup-2025.mp4", caption: "Акежан — 2 место на Asian Global Cup 2025, Алматы" },
-    { video: "assets/gallery/dry-shave.mp4", caption: "Уход за лицом" },
-    { video: "assets/gallery/interior.mp4", caption: "Барбершоп изнутри" },
-    { video: "assets/gallery/beard.mp4", caption: "Стрижка в работе" }
+    { video: "assets/gallery/dry-shave.mp4", caption: "Добро пожаловать в Akezhan" },
+    { video: "assets/gallery/interior.mp4", caption: "Атмосфера барбершопа" },
+    { video: "assets/gallery/beard.mp4", caption: "Стрижка в работе" },
+    { src: "assets/frames/beard-22.jpg", caption: "Мастер за работой" },
+    { src: "assets/frames/interior-64.jpg", caption: "Стойка и косметика" },
+    { src: "assets/frames/cup-2025-8.jpg", caption: "Asian Global Cup 2025" },
+    { src: "assets/frames/dry-shave-12.jpg", caption: "Кресло барбера" }
   ],
 
   // Отзывы клиентов из 2GIS.
