@@ -501,3 +501,14 @@ body::after {
   .reveal-img img { clip-path: none; transform: none; }
   .hero__photo { opacity: 1; transform: rotate(var(--r)); animation: none; }
 }
+
+/* логотипы из Instagram */
+.logo img, .map__badge img { border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px rgba(201, 164, 92, .55); }
+.preloader__emblem { width: 96px; height: 96px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(201, 164, 92, .6), 0 0 60px rgba(201, 164, 92, .25); opacity: 0; transform: scale(.6) rotate(-20deg); animation: emblem 1s var(--ease) .1s forwards; }
+@keyframes emblem { to { opacity: 1; transform: none; } }
+.ig-cards { display: grid; gap: 12px; }
+.ig { display: flex; align-items: center; gap: 14px; padding: 12px 18px 12px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); transition: border-color .4s, transform .5s var(--ease); max-width: 440px; }
+.ig:hover { border-color: rgba(201, 164, 92, .6); transform: translateX(6px); }
+.ig img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px rgba(201, 164, 92, .55); flex: none; }
+.ig b { display: block; font-size: 17px; font-weight: 600; }
+.ig small { display: block; font-size: 13px; color: var(--muted); line-height: 1.3; }
