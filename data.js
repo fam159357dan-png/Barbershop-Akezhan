@@ -22,12 +22,20 @@ window.SITE = {
     { id: "styling", group: "Уход и стиль", name: "Укладка", price: 1500 },
     { id: "wax", group: "Уход и стиль", name: "Ваксинг", note: "Удаление волос из носа и ушей, одна зона", price: 1000 },
     { id: "mask", group: "Уход и стиль", name: "Маска для лица", note: "Глина", price: 1500 },
-    { id: "facial", group: "Уход и стиль", name: "Чистка лица", note: "С брендом «Kristina»", price: 6000 }
+    { id: "facial", group: "Уход и стиль", name: "Чистка лица", note: "С брендом «Kristina»", price: 6000 },
+
+    // Услуги у Акежана (master) — показываются отдельной карточкой masterCard, мастер в записи подставляется сам.
+    { id: "ak-men", master: "Акежан", name: "Мужская стрижка", price: 6000 },
+    { id: "ak-student", master: "Акежан", name: "Студентам и школьникам", price: 5000, tag: "скидка" },
+    { id: "ak-combo", master: "Акежан", name: "Стрижка + борода", price: 8000 },
+    { id: "ak-kids", master: "Акежан", name: "Детская стрижка", note: "До 12 лет", price: 4000 }
   ],
+
+  masterCard: { name: "Акежан", title: "Основатель и главный барбер", note: "Призёр Asian Global Cup 2025", photo: "assets/frames/cup-2025-4.jpg" },
 
   // photo: путь к фото мастера, например "assets/team/sayat.jpg". Пока фото нет, показываются инициалы.
   team: [
-    { name: "Акежан", role: "Барбер · 2 место Asian Global Cup 2025", instagram: "akezhan.barber", photo: "assets/frames/cup-2025-4.jpg" },
+    { name: "Акежан", role: "Основатель и главный барбер", instagram: "akezhan.barber", photo: "assets/frames/cup-2025-4.jpg" },
     { name: "Саят", role: "Барбер", instagram: "sa.yat087", photo: null },
     { name: "Асет", role: "Барбер", instagram: null, photo: null },
     { name: "Али", role: "Барбер", instagram: null, photo: null },

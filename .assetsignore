@@ -1,0 +1,11 @@
+.env.local
+.vercel
+previews
+HANDOFF.md
+.git
+.gitignore
+.wrangler
+.assetsignore
+wrangler.jsonc
+node_modules
+*.md

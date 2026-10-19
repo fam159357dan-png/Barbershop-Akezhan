@@ -21,17 +21,28 @@
   $("[data-year]").textContent = new Date().getFullYear();
 
   const priceText = (p) => (p.to ? `${p.price.toLocaleString("ru-RU")}–${fmtPrice(p.to)}` : fmtPrice(p.price));
-  const groups = [...new Set(S.services.map((p) => p.group))];
-  $("[data-services]").innerHTML = groups.map((g, gi) => `
-    <section class="pcard ${g === "Комплексы" ? "pcard--hot" : ""} reveal" style="--d:${gi * 0.08}s">
-      <h3 class="pcard__title">${esc(g)}</h3>
-      ${S.services.filter((p) => p.group === g).map((p) => `
-      <div class="pr" data-pick-service="${p.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(p.name)}, ${priceText(p)}">
+  const priceRow = (p) => `
+      <div class="pr" data-pick-service="${p.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(p.name)}${p.master ? ` у ${esc(p.master)}` : ""}, ${priceText(p)}">
         <span class="pr__name">${esc(p.name)}${p.tag ? ` <em>${esc(p.tag)}</em>` : ""}${p.note ? `<small>${esc(p.note)}</small>` : ""}</span>
         <i class="pr__dots" aria-hidden="true"></i>
         <b class="pr__val">${priceText(p)}</b>
-      </div>`).join("")}
-    </section>`).join("");
+      </div>`;
+  const groups = [...new Set(S.services.filter((p) => p.group).map((p) => p.group))];
+  const mc = S.masterCard;
+  $("[data-services]").innerHTML = groups.map((g, gi) => `
+    <section class="pcard ${g === "Комплексы" ? "pcard--hot" : ""} reveal" style="--d:${gi * 0.08}s">
+      <h3 class="pcard__title">${esc(g)}</h3>
+      ${S.services.filter((p) => p.group === g).map(priceRow).join("")}
+    </section>`).join("") + (mc ? `
+    <section class="pcard pcard--master reveal">
+      <figure class="pcard__photo"><img src="${esc(mc.photo)}" alt="${esc(mc.name)}" loading="lazy"></figure>
+      <div>
+        <p class="pcard__role">${esc(mc.title)}</p>
+        <h3 class="pcard__name">${esc(mc.name)}</h3>
+        <p class="pcard__note">${esc(mc.note)}</p>
+        <div class="pcard__rows">${S.services.filter((p) => p.master === mc.name).map(priceRow).join("")}</div>
+      </div>
+    </section>` : "");
 
   $("[data-team]").innerHTML = S.team.map((m, i) => `
     <article class="member reveal" style="--d:${i * 0.08}s">
@@ -352,11 +363,14 @@
   };
   const setChoice = (key, value) => {
     state[key] = value;
+    const m = key === "service" && S.services.find((p) => p.id === value).master;
+    if (m) setChoice("master", m);
     const wrap = key === "service" ? $("[data-service-chips]") : $("[data-master-chips]");
     $$("button", wrap).forEach((x) => x.setAttribute("aria-checked", x.dataset.value === value ? "true" : "false"));
   };
 
-  radioGroup($("[data-service-chips]"), S.services.map((s) => ({ value: s.id, label: esc(s.name) })), "service");
+  radioGroup($("[data-service-chips]"), S.services.map((s) => ({ value: s.id, label: esc(s.master ? `${s.name} · ${s.master}` : s.name) })), "service");
+  $("[data-service-chips]").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setChoice("service", b.dataset.value); });
   radioGroup($("[data-master-chips]"), [{ value: "Любой", label: "Любой мастер" }].concat(S.team.map((m) => ({ value: m.name, label: esc(m.name) }))), "master");
 
   const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
@@ -424,7 +438,7 @@
     const lines = [
       "Здравствуйте! Хочу записаться в Akezhan Barbershop.",
       `Имя: ${name}`,
-      `Услуга: ${svc.name} (${priceText(svc)})`,
+      `Услуга: ${svc.name}${svc.master ? ` (у ${svc.master})` : ""}, ${priceText(svc)}`,
       `Мастер: ${state.master}`,
       `Дата: ${wd[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}, ${state.time}`
     ];
