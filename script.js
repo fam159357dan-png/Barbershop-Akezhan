@@ -359,7 +359,8 @@
       if (!b || b.disabled) return;
       state[key] = b.dataset.value;
       $$("button", wrap).forEach((x) => x.setAttribute("aria-checked", x === b ? "true" : "false"));
-      if (key === "day") renderTimes();
+      if (key === "day") loadBusy();
+      else if (key === "master") renderTimes();
       $("[data-form-error]").textContent = "";
     };
   };
@@ -370,8 +371,9 @@
       const m = S.services.find((p) => p.id === value).master;
       if (m) { state.autoMaster = true; setChoice("master", m); }
       else if (state.autoMaster) { state.autoMaster = false; setChoice("master", "Любой"); }
-      showServiceInfo(); renderTimes();
+      showServiceInfo();
     }
+    if (typeof renderTimes === "function" && days.length) renderTimes();
     const wrap = key === "service" ? $("[data-service-chips]") : $("[data-master-chips]");
     $$("button", wrap).forEach((x) => x.setAttribute("aria-checked", x.dataset.value === value ? "true" : "false"));
   };
@@ -412,6 +414,25 @@
     label: `<small>${i === 0 && d.getDate() === now.getDate() ? "Сег" : wd[d.getDay()]}</small><b>${d.getDate()}</b>`
   })), "day", "day");
 
+  /* ---------- связь с CRM: занятое время и сохранение заявки ---------- */
+  const crm = S.crm && S.crm.url && S.crm.key ? S.crm : null;
+  const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const hhmm = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  const crmFetch = (path, body) => fetch(`${crm.url}/rest/v1/${path}`, { method: "POST", headers: { apikey: crm.key, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(body) });
+  let busy = {}; // { "Акежан": ["10:00", "10:30"] } на выбранный день
+  async function loadBusy() {
+    busy = {};
+    if (crm) {
+      const d = days.find((x) => dayKey(x) === state.day);
+      try {
+        const r = await crmFetch("rpc/busy_slots", { p_location: crm.location, p_date: isoDay(d) });
+        if (r.ok) for (const { barber, time } of await r.json()) (busy[barber] ||= []).push(time);
+      } catch { /* база недоступна: всё время свободно, WhatsApp подтвердит */ }
+    }
+    renderTimes();
+  }
+  if (crm) $("[data-phone-field]").hidden = false;
+
   function renderTimes() {
     const d = days.find((x) => dayKey(x) === state.day);
     const n = shopNow();
@@ -421,12 +442,14 @@
     const dur = S.services.find((x) => x.id === state.service).duration || S.slotMinutes;
     for (let m = S.hours.open * 60; m <= lastSlot * 60; m += S.slotMinutes) {
       const label = `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-      slots.push({ value: label, label, disabled: (isToday && m <= n.getHours() * 60 + n.getMinutes() + 30) || m + dur > S.hours.close * 60 });
+      // у выбранного мастера все получасовые слоты услуги должны быть свободны («Любой» слот не держит)
+      const taken = state.master !== "Любой" && Array.from({ length: Math.ceil(dur / 30) }, (_, k) => hhmm(m + k * 30)).some((t) => (busy[state.master] || []).includes(t));
+      slots.push({ value: label, label, disabled: taken || (isToday && m <= n.getHours() * 60 + n.getMinutes() + 30) || m + dur > S.hours.close * 60 });
     }
     if (slots.find((s) => s.value === state.time && s.disabled) || !slots.find((s) => s.value === state.time)) state.time = null;
     radioGroup($("[data-times]"), slots, "time", "time");
   }
-  renderTimes();
+  loadBusy();
 
   document.addEventListener("click", (e) => {
     const svc = e.target.closest("[data-pick-service]");
@@ -444,13 +467,16 @@
     toast.t = setTimeout(() => t.classList.remove("show"), 3200);
   };
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = form.name.value.trim();
+    const phone = form.phone.value.trim();
     const err = $("[data-form-error]");
     form.name.classList.toggle("invalid", !name);
+    err.textContent = "";
     let msg = "";
     if (!name) msg = "Пожалуйста, укажите имя.";
+    else if (crm && phone.replace(/\D/g, "").length < 10) msg = "Укажите телефон, чтобы мы могли подтвердить запись.";
     else if (!state.time) msg = "Выберите удобное время.";
     if (msg) {
       err.textContent = msg;
@@ -467,10 +493,34 @@
       `Мастер: ${state.master}`,
       `Дата: ${wd[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}, ${state.time}`
     ];
+    if (phone) lines.splice(2, 0, `Телефон: ${phone}`);
     const comment = form.comment.value.trim();
     if (comment) lines.push(`Комментарий: ${comment}`);
-    window.open(waLink(lines.join("\n")), "_blank", "noopener");
-    toast("Открываем WhatsApp, отправьте сообщение мастеру");
+    const wa = waLink(lines.join("\n"));
+    if (!crm) {
+      window.open(wa, "_blank", "noopener");
+      toast("Открываем WhatsApp, отправьте сообщение мастеру");
+      return;
+    }
+    // окно открываем сразу (иначе Safari блокирует его после ожидания), адрес подставим после сохранения
+    const win = window.open("", "_blank");
+    let res = "error";
+    try {
+      const r = await crmFetch("bookings", {
+        location: crm.location, barber: state.master, date: isoDay(d), time: state.time, name, phone,
+        service: svc.master ? `${svc.name} · ${svc.master}` : svc.name, duration: svc.duration || 30
+      });
+      res = r.ok ? "ok" : r.status === 409 ? "taken" : "error";
+    } catch { /* база недоступна: заявка уйдёт только в WhatsApp */ }
+    if (res === "taken") {
+      win && win.close();
+      err.textContent = "Это время только что заняли. Выберите другое.";
+      await loadBusy();
+      return;
+    }
+    toast(res === "ok" ? "Заявка принята. Отправьте сообщение в WhatsApp, чтобы мастер подтвердил" : "Открываем WhatsApp, отправьте сообщение мастеру");
+    if (win) win.location.href = wa; else window.open(wa, "_blank", "noopener");
+    if (res === "ok") loadBusy();
   });
   form.name.addEventListener("input", () => form.name.classList.remove("invalid"));
 

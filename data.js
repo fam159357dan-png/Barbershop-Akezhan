@@ -85,5 +85,9 @@ window.SITE = {
   ],
 
   hours: { open: 10, close: 20, utcOffset: 5 }, // Петропавловск, UTC+5
-  slotMinutes: 60
+  slotMinutes: 30, // шаг записи — как в CRM
+
+  // Связь с CRM (Supabase). Пустые url/key — сайт не пишет заявки в базу и просто открывает WhatsApp.
+  // Заполняются после создания базы: url вида https://xxxx.supabase.co, key — публичный (publishable) ключ.
+  crm: { url: "", key: "", location: "Абая 40" }
 };
