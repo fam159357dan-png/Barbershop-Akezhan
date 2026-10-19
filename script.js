@@ -9,6 +9,7 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const fmtPrice = (n) => n.toLocaleString("ru-RU").replace(/ /g, " ") + " ₸";
   const waLink = (text) => `https://wa.me/${S.phone}?text=${encodeURIComponent(text)}`;
+  $$("[data-wa]").forEach((el) => { el.href = waLink(el.dataset.wa); });
 
   // Local time in Petropavlovsk (UTC+5) regardless of visitor timezone.
   const shopNow = () => {
