@@ -553,3 +553,7 @@ body::after {
   .pcard__photo { grid-row: 1 / span 3; }
   .pcard__rows { grid-column: 1 / -1; grid-template-columns: 1fr; margin-top: 12px; }
 }
+
+/* длительность услуги */
+.pr__val small { display: block; margin-top: 5px; font: 500 12px/1 var(--body); color: var(--muted); text-align: right; letter-spacing: .02em; }
+.field__hint { margin: 0; font-size: 14px; color: var(--gold-2); }

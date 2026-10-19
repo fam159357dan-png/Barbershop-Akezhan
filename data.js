@@ -5,30 +5,31 @@
 window.SITE = {
   phone: "77076857208",
 
-  // Прайс-лист барбершопа (в тенге). to — верхняя граница диапазона, tag — пометка, note — пояснение.
+  // Прайс-лист барбершопа (в тенге). to — верхняя граница диапазона, tag — пометка, note — пояснение,
+  // duration — длительность в минутах (для записи и будущей CRM; нет поля — время уточняет мастер).
   services: [
-    { id: "men", group: "Стрижки", name: "Мужская стрижка", price: 5000 },
-    { id: "student", group: "Стрижки", name: "Студентам и школьникам", price: 3500, tag: "скидка" },
-    { id: "kids", group: "Стрижки", name: "Детская стрижка", note: "До 12 лет", price: 3000 },
+    { id: "men", group: "Стрижки", name: "Мужская стрижка", price: 5000, duration: 30 },
+    { id: "student", group: "Стрижки", name: "Студентам и школьникам", price: 3500, tag: "скидка", duration: 30 },
+    { id: "kids", group: "Стрижки", name: "Детская стрижка", note: "До 12 лет", price: 3000, duration: 30 },
     { id: "tattoo", group: "Стрижки", name: "Hair tattoo", price: 500, to: 1000 },
 
-    { id: "beard", group: "Борода", name: "Оформление бороды", price: 3000 },
+    { id: "beard", group: "Борода", name: "Оформление бороды", price: 3000, duration: 30 },
     { id: "beard-camo", group: "Борода", name: "Камуфляж бороды", price: 2500 },
 
-    { id: "combo-beard", group: "Комплексы", name: "Стрижка + борода", price: 7000, tag: "выгода 1 000 ₸" },
-    { id: "combo-camo", group: "Комплексы", name: "Стрижка + камуфляж волос", price: 10000 },
-    { id: "combo-care", group: "Комплексы", name: "Стрижка + маска + ваксинг", price: 10000 },
+    { id: "combo-beard", group: "Комплексы", name: "Стрижка + борода", price: 7000, tag: "выгода 1 000 ₸", duration: 60 },
+    { id: "combo-camo", group: "Комплексы", name: "Стрижка + камуфляж волос", price: 10000, duration: 90 },
+    { id: "combo-care", group: "Комплексы", name: "Стрижка + маска + ваксинг", price: 10000, duration: 60 },
 
     { id: "styling", group: "Уход и стиль", name: "Укладка", price: 1500 },
     { id: "wax", group: "Уход и стиль", name: "Ваксинг", note: "Удаление волос из носа и ушей, одна зона", price: 1000 },
     { id: "mask", group: "Уход и стиль", name: "Маска для лица", note: "Глина", price: 1500 },
-    { id: "facial", group: "Уход и стиль", name: "Чистка лица", note: "С брендом «Kristina»", price: 6000 },
+    { id: "facial", group: "Уход и стиль", name: "Чистка лица", note: "С брендом «Kristina»", price: 6000, duration: 30 },
 
     // Услуги у Акежана (master) — показываются отдельной карточкой masterCard, мастер в записи подставляется сам.
-    { id: "ak-men", master: "Акежан", name: "Мужская стрижка", price: 6000 },
-    { id: "ak-student", master: "Акежан", name: "Студентам и школьникам", price: 5000, tag: "скидка" },
-    { id: "ak-combo", master: "Акежан", name: "Стрижка + борода", price: 8000 },
-    { id: "ak-kids", master: "Акежан", name: "Детская стрижка", note: "До 12 лет", price: 4000 }
+    { id: "ak-men", master: "Акежан", name: "Мужская стрижка", price: 6000, duration: 60 },
+    { id: "ak-student", master: "Акежан", name: "Студентам и школьникам", price: 5000, tag: "скидка", duration: 60 },
+    { id: "ak-combo", master: "Акежан", name: "Стрижка + борода", price: 8000, duration: 60 },
+    { id: "ak-kids", master: "Акежан", name: "Детская стрижка", note: "До 12 лет", price: 4000, duration: 30 }
   ],
 
   masterCard: { name: "Акежан", title: "Основатель и главный барбер", note: "Призёр Asian Global Cup 2025", photo: "assets/frames/cup-2025-4.jpg" },

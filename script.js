@@ -22,10 +22,10 @@
 
   const priceText = (p) => (p.to ? `${p.price.toLocaleString("ru-RU")}–${fmtPrice(p.to)}` : fmtPrice(p.price));
   const priceRow = (p) => `
-      <div class="pr" data-pick-service="${p.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(p.name)}${p.master ? ` у ${esc(p.master)}` : ""}, ${priceText(p)}">
+      <div class="pr" data-pick-service="${p.id}" tabindex="0" role="button" aria-label="Записаться: ${esc(p.name)}${p.master ? `, мастер ${esc(p.master)}` : ""}, ${priceText(p)}">
         <span class="pr__name">${esc(p.name)}${p.tag ? ` <em>${esc(p.tag)}</em>` : ""}${p.note ? `<small>${esc(p.note)}</small>` : ""}</span>
         <i class="pr__dots" aria-hidden="true"></i>
-        <b class="pr__val">${priceText(p)}</b>
+        <b class="pr__val">${priceText(p)}${p.duration ? `<small>${p.duration} мин</small>` : ""}</b>
       </div>`;
   const groups = [...new Set(S.services.filter((p) => p.group).map((p) => p.group))];
   const mc = S.masterCard;
@@ -363,8 +363,13 @@
   };
   const setChoice = (key, value) => {
     state[key] = value;
-    const m = key === "service" && S.services.find((p) => p.id === value).master;
-    if (m) setChoice("master", m);
+    if (key === "service") {
+      // услуга Акежана сама выбирает его мастером; при переходе на обычную услугу возвращаем «Любой»
+      const m = S.services.find((p) => p.id === value).master;
+      if (m) { state.autoMaster = true; setChoice("master", m); }
+      else if (state.autoMaster) { state.autoMaster = false; setChoice("master", "Любой"); }
+      showServiceInfo(); renderTimes();
+    }
     const wrap = key === "service" ? $("[data-service-chips]") : $("[data-master-chips]");
     $$("button", wrap).forEach((x) => x.setAttribute("aria-checked", x.dataset.value === value ? "true" : "false"));
   };
@@ -372,6 +377,21 @@
   radioGroup($("[data-service-chips]"), S.services.map((s) => ({ value: s.id, label: esc(s.master ? `${s.name} · ${s.master}` : s.name) })), "service");
   $("[data-service-chips]").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setChoice("service", b.dataset.value); });
   radioGroup($("[data-master-chips]"), [{ value: "Любой", label: "Любой мастер" }].concat(S.team.map((m) => ({ value: m.name, label: esc(m.name) }))), "master");
+  // смена мастера вручную: та же услуга по его прайсу (Мужская стрижка ↔ Мужская стрижка у Акежана)
+  $("[data-master-chips]").addEventListener("click", (e) => {
+    if (!e.target.closest("button")) return;
+    state.autoMaster = false;
+    const cur = S.services.find((p) => p.id === state.service);
+    const own = S.services.some((p) => p.master === state.master) ? state.master : undefined;
+    const twin = S.services.find((p) => p.name === cur.name && p.master === own);
+    if (twin && twin.id !== cur.id) setChoice("service", twin.id);
+  });
+
+  const showServiceInfo = () => {
+    const p = S.services.find((x) => x.id === state.service);
+    $("[data-service-info]").textContent = `${p.name}${p.master ? ` (мастер ${p.master})` : ""}: ${priceText(p)}, ${p.duration ? `${p.duration} мин` : "длительность уточнит мастер"}`;
+  };
+  showServiceInfo();
 
   const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
@@ -395,9 +415,11 @@
     const n = shopNow();
     const isToday = d.getDate() === n.getDate() && d.getMonth() === n.getMonth();
     const slots = [];
+    // услуга должна закончиться до закрытия: 90 минут в 19:00 уже не помещаются
+    const dur = S.services.find((x) => x.id === state.service).duration || S.slotMinutes;
     for (let m = S.hours.open * 60; m <= lastSlot * 60; m += S.slotMinutes) {
       const label = `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-      slots.push({ value: label, label, disabled: isToday && m <= n.getHours() * 60 + n.getMinutes() + 30 });
+      slots.push({ value: label, label, disabled: (isToday && m <= n.getHours() * 60 + n.getMinutes() + 30) || m + dur > S.hours.close * 60 });
     }
     if (slots.find((s) => s.value === state.time && s.disabled) || !slots.find((s) => s.value === state.time)) state.time = null;
     radioGroup($("[data-times]"), slots, "time", "time");
@@ -438,7 +460,8 @@
     const lines = [
       "Здравствуйте! Хочу записаться в Akezhan Barbershop.",
       `Имя: ${name}`,
-      `Услуга: ${svc.name}${svc.master ? ` (у ${svc.master})` : ""}, ${priceText(svc)}`,
+      `Услуга: ${svc.name}${svc.master ? ` (мастер ${svc.master})` : ""}, ${priceText(svc)}`,
+      ...(svc.duration ? [`Длительность: ${svc.duration} мин`] : []),
       `Мастер: ${state.master}`,
       `Дата: ${wd[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}, ${state.time}`
     ];
