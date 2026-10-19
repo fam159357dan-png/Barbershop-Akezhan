@@ -44,6 +44,7 @@
       </div>
     </section>` : "");
 
+  $("[data-team-count]").dataset.count = S.team.length;
   $("[data-team]").innerHTML = S.team.map((m, i) => `
     <article class="member reveal" style="--d:${i * 0.08}s">
       <div class="member__art">${m.photo ? `<img src="${esc(m.photo)}" alt="${esc(m.name)}" loading="lazy">` : `<span class="member__initial" aria-hidden="true">${esc(m.name[0])}</span>`}</div>

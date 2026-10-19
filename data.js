@@ -38,10 +38,9 @@ window.SITE = {
   team: [
     { name: "Акежан", role: "Основатель и главный барбер", instagram: "akezhan.barber", photo: "assets/frames/cup-2025-4.jpg" },
     { name: "Саят", role: "Барбер", instagram: "sa.yat087", photo: null },
-    { name: "Асет", role: "Барбер", instagram: null, photo: null },
+    { name: "Сулеймен", role: "Барбер", instagram: null, photo: null },
     { name: "Али", role: "Барбер", instagram: null, photo: null },
-    { name: "Әділет", role: "Барбер", instagram: null, photo: null },
-    { name: "Камила", role: "Мастер", instagram: null, photo: null }
+    { name: "Әділет", role: "Барбер", instagram: null, photo: null }
   ],
 
   // Кадры для бегущей ленты (вырезаны из роликов Instagram).
