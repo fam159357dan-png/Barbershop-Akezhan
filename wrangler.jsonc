@@ -1,5 +1,12 @@
 {
   "name": "barbershop-akezhan",
+  "main": "worker.js",
   "compatibility_date": "2026-10-19",
-  "assets": { "directory": ".", "not_found_handling": "404-page" }
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/data.js", "/admin", "/api/*"]
+  },
+  "kv_namespaces": [{ "binding": "SITE_KV", "id": "efc8ca0baedc44b295865abfc3b94817" }]
 }

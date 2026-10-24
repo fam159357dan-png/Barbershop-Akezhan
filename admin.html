@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Редактирование сайта</title>
+<style>
+  body { font: 16px/1.4 system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; background: #111; color: #eee; }
+  h1 { font-size: 22px; }
+  fieldset { border: 1px solid #333; border-radius: 8px; margin: 16px 0; padding: 12px; }
+  legend { padding: 0 6px; color: #c9a45c; }
+  label { display: block; margin: 8px 0; }
+  input { background: #1d1d1d; color: #eee; border: 1px solid #444; border-radius: 6px; padding: 8px; font: inherit; box-sizing: border-box; }
+  label input { display: block; width: 100%; max-width: 280px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 4px 4px 4px 0; }
+  td input { width: 100%; }
+  td:nth-child(3) input, td:nth-child(4) input { width: 90px; }
+  button { background: #c9a45c; color: #111; border: 0; border-radius: 6px; padding: 10px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.del { background: #3a2222; color: #eee; padding: 8px 10px; }
+  #msg { margin-left: 12px; }
+  a { color: #c9a45c; }
+  @media (max-width: 640px) { table, tbody, tr, td { display: block; } tr { border-bottom: 1px solid #333; padding: 8px 0; } td input, td:nth-child(3) input, td:nth-child(4) input { width: 100%; } }
+</style>
+</head>
+<body>
+<h1>Редактирование сайта · <a href="/" target="_blank">открыть сайт</a></h1>
+<p>Измените нужное и нажмите «Сохранить» — сайт обновится сразу.</p>
+
+<form id="f">
+  <fieldset>
+    <legend>Контакты и часы работы</legend>
+    <label>Телефон для WhatsApp (цифры, например 77076857208) <input name="phone" inputmode="numeric" required></label>
+    <label>Открываемся в (час) <input name="open" type="number" min="0" max="23" required></label>
+    <label>Закрываемся в (час) <input name="close" type="number" min="1" max="24" required></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Услуги и цены</legend>
+    <table>
+      <thead><tr><td>Раздел</td><td>Название</td><td>Цена, ₸</td><td>Минут</td><td></td></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <datalist id="groups"></datalist>
+    <p><button type="button" id="add">+ Добавить услугу</button></p>
+  </fieldset>
+
+  <button>Сохранить</button><span id="msg"></span>
+</form>
+
+<script src="data.js"></script>
+<script>
+  const S = window.SITE, f = document.getElementById("f"), rows = document.getElementById("rows"), msg = document.getElementById("msg");
+
+  const cell = (key, value, type = "text") => {
+    const td = document.createElement("td"), i = document.createElement("input");
+    i.type = type; i.value = value ?? ""; i.dataset.k = key;
+    if (key === "group") i.setAttribute("list", "groups");
+    if (key === "price") i.min = 0;
+    td.append(i);
+    return td;
+  };
+
+  function addRow(s = {}) {
+    const tr = document.createElement("tr"), del = document.createElement("td"), b = document.createElement("button");
+    tr._service = s; // остальные поля услуги (id, мастер, пометки) сохраняются как были
+    b.type = "button"; b.className = "del"; b.textContent = "✕"; b.title = "Удалить";
+    b.onclick = () => tr.remove();
+    del.append(b);
+    tr.append(cell("group", s.group), cell("name", s.name), cell("price", s.price, "number"), cell("duration", s.duration, "number"), del);
+    tr.querySelector('[data-k="name"]').placeholder = s.master ? "Услуга у мастера " + s.master : "Название";
+    rows.append(tr);
+  }
+
+  f.phone.value = S.phone; f.open.value = S.hours.open; f.close.value = S.hours.close;
+  S.services.forEach(addRow);
+  document.getElementById("groups").innerHTML = [...new Set(S.services.map((s) => s.group).filter(Boolean))].map((g) => `<option value="${g}">`).join("");
+  document.getElementById("add").onclick = () => addRow({ id: "s" + Date.now() });
+
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const services = [...rows.children].map((tr) => {
+      const v = (k) => tr.querySelector(`[data-k="${k}"]`).value.trim();
+      const s = { ...tr._service, name: v("name"), price: Number(v("price")) };
+      for (const [k, val] of [["group", v("group")], ["duration", Number(v("duration")) || ""]]) val ? (s[k] = val) : delete s[k];
+      return s;
+    }).filter((s) => s.name);
+    if (services.some((s) => !(s.price >= 0))) { msg.textContent = "Укажите цену у каждой услуги"; return; }
+
+    const site = { ...S, phone: f.phone.value.trim(), hours: { ...S.hours, open: +f.open.value, close: +f.close.value }, services };
+    msg.textContent = "Сохраняю…";
+    try {
+      const r = await fetch("/api/site", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(site) });
+      msg.textContent = r.ok ? "✓ Сохранено, сайт обновлён" : "Ошибка " + r.status + ", попробуйте ещё раз";
+    } catch { msg.textContent = "Нет связи, попробуйте ещё раз"; }
+  };
+</script>
+</body>
+</html>

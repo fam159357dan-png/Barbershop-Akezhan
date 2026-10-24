@@ -3,3 +3,5 @@ previews/
 
 .vercel
 .env*
+.dev.vars
+.wrangler

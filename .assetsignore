@@ -9,3 +9,5 @@ HANDOFF.md
 wrangler.jsonc
 node_modules
 *.md
+worker.js
+.dev.vars
